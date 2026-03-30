@@ -1,25 +1,18 @@
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorPages();
+var startup = new Startup(builder.Configuration);
+startup.ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Add this before any other middleware that might write cookies
+app.UseCookiePolicy();
+
+app.UseCookiePolicy(new CookiePolicyOptions
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+    Secure = CookieSecurePolicy.Always,
+    //safari does not work if this is not set here and chrome works as well
+    MinimumSameSitePolicy = SameSiteMode.Unspecified
+});
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
-
+startup.Configure(app, builder.Environment);
 app.Run();
