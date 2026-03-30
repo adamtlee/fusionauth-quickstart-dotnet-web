@@ -22,7 +22,10 @@ namespace Pages
 
             var clientId = _configuration["FusionAuthSettings:ClientId"];
             var url = host + "/oauth2/logout?client_id=" + clientId;
-            Response.Cookies.Delete(cookieName);
+            if (!string.IsNullOrEmpty(cookieName))
+            {
+                Response.Cookies.Delete(cookieName);
+            }
             return Redirect(url);
         }
     }
